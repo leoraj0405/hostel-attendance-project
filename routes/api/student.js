@@ -14,7 +14,7 @@ con.connect((err) => {
     console.log('connected')
 })
 router.get('/', (req, res) => {
-    var sqlQuery = `select *, DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM user where deletedAt is null`
+    var sqlQuery = `select *, DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM student where deletedAt is null`
     con.query(sqlQuery, (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)
@@ -26,16 +26,22 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
     const {
+        accNo,
         firstName,
         lastName,
+        wardenId,
+        blockId,
+        roomId,
+        departmentId,
         phoneNo,
         email,
-        loginId,
-        password,
+        native,
+
     } = req.body;
-    const sqlQuery = 'insert into user (firstName, lastName, phoneNo, email, loginId, password) values (?,?,?,?,?,?)'
-    con.query(sqlQuery, [firstName, lastName, phoneNo, email, loginId.toLowerCase(), password], (err, result) => {
+    const sqlQuery = 'insert into student (accNo, firstName, lastName, wardenId, blockId, roomId, departmentId, phoneNo, email, native) values (?,?,?,?,?,?,?,?,?,?)'
+    con.query(sqlQuery, [accNo, firstName, lastName, wardenId, blockId, roomId, departmentId, phoneNo, email, native], (err, result) => {
         if (err) {
+            console.log(err)
             res.status(409).send(err.sqlMessage)
             return
         }
@@ -48,35 +54,51 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     const {
+        accNo,
         firstName,
         lastName,
+        wardenId,
+        blockId,
+        roomId,
+        departmentId,
         phoneNo,
         email,
-        loginId,
-        password,
+        native,
     } = req.body;
 
     const conditionArr = []
+    if (accNo) {
+        conditionArr.push(` accNo = '${accNo}'`)
+    }
     if (firstName) {
         conditionArr.push(` firstName = '${firstName}'`)
     }
     if (lastName) {
         conditionArr.push(` lastName = '${lastName}'`)
     }
+    if (wardenId) {
+        conditionArr.push(` wardenId = '${wardenId}'`)
+    }
+    if (blockId) {
+        conditionArr.push(` blockId = '${blockId}'`)
+    }
+    if (roomId) {
+        conditionArr.push(` roomId = '${roomId}'`)
+    }
+    if (departmentId) {
+        conditionArr.push(`departmentId = '${departmentId}'`)
+    }
     if (phoneNo) {
-        conditionArr.push(` phoneNo = '${phoneNo}'`)
+        conditionArr.push(`phoneNo = '${phoneNo}'`)
     }
     if (email) {
-        conditionArr.push(` email = '${email}'`)
+        conditionArr.push(`email = '${email}'`)
     }
-    if (loginId) {
-        conditionArr.push(` loginId = '${loginId}'`)
-    }
-    if (password) {
-        conditionArr.push(` password = '${password}'`)
+    if (native) {
+        conditionArr.push(`native = '${native}`)
     }
     var queryStr = conditionArr.length ? `${conditionArr.join(',')}` : ``
-    const sqlQuery = `update user set ${queryStr} where id = ${id}`
+    const sqlQuery = `update student set ${queryStr} where id = ${id}`
 
     con.query(sqlQuery, (err, result) => {
         if (err) {
@@ -85,7 +107,7 @@ router.put('/:id', (req, res) => {
             return
         }
         if (result.affectedRows != 0) {
-            con.query(`select * from user where id = ${id}`, (err2, result2) => {
+            con.query(`select * from student where id = ${id}`, (err2, result2) => {
                 if (err2) {
                     console.log(err2)
                     res.status(409).send(err2.sqlMessage)
@@ -99,7 +121,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     const delId = req.params.id;
-    const sqlQuery = `UPDATE user SET deletedAt = CURRENT_TIMESTAMP WHERE id = ${delId};`
+    const sqlQuery = `UPDATE student SET deletedAt = CURRENT_TIMESTAMP WHERE id = ${delId};`
     con.query(sqlQuery, (err, result) => {
         if (err) throw err;
         if (result.affectedRows != 0) {
@@ -112,7 +134,7 @@ router.delete('/:id', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    const sqlQuery = `select * from user where id = ${id}`
+    const sqlQuery = `select * from student where id = ${id}`
     con.query(sqlQuery, (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)

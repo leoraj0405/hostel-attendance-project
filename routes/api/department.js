@@ -14,7 +14,7 @@ con.connect((err) => {
     console.log('connected')
 })
 router.get('/', (req, res) => {
-    var sqlQuery = `SELECT *,DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM room`
+    var sqlQuery = `select *, DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM department where deletedAt is null`
     con.query(sqlQuery, (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)
@@ -26,16 +26,15 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
     const {
-        roomNo,
-        blockId,
+        name
     } = req.body;
-    const sqlQuery = 'insert into room (roomNo, blockId) values (?,?)'
-    con.query(sqlQuery, [roomNo, blockId], (err, result) => {
+    const sqlQuery = 'insert into department (name) values (?)'
+    con.query(sqlQuery, [name], (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)
             return
         }
-        if(result.affectedRows != 0) {
+        if (result.affectedRows != 0) {
             res.status(200).send("insert successfully")
         }
     })
@@ -44,20 +43,10 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     const {
-        roomNo,
-        blockId,
+        name
     } = req.body;
 
-    const conditionArr = []
-    if (roomNo) {
-        conditionArr.push(` roomNo = '${roomNo}'`)
-    }
-    if (blockId) {
-        conditionArr.push(` blockId = '${blockId}'`)
-    }
-    var queryStr = conditionArr.length ? `${conditionArr.join(',')}` : ``
-    const sqlQuery = `update room set ${queryStr} where id = ${id}`
-
+    const sqlQuery = `update department set name = '${name}' where id = ${id}`
     con.query(sqlQuery, (err, result) => {
         if (err) {
             console.log(err)
@@ -65,9 +54,8 @@ router.put('/:id', (req, res) => {
             return
         }
         if (result.affectedRows != 0) {
-            con.query(`select * from room where id = ${id}`, (err2, result2) => {
+            con.query(`select * from department where id = ${id}`, (err2, result2) => {
                 if (err2) {
-                    console.log(err2)
                     res.status(409).send(err2.sqlMessage)
                     return
                 }
@@ -77,24 +65,24 @@ router.put('/:id', (req, res) => {
     })
 })
 
-// router.delete('/:id', (req, res) => {
-//     const delId = req.params.id;
-//     const sqlQuery = `UPDATE room SET deletedAt = CURRENT_TIMESTAMP WHERE id = ${delId};`
-//     con.query(sqlQuery, (err, result) => {
-//         if (err) throw err;
-//         if (result.affectedRows != 0) {
-//             res.status(200).send('delete successfully')
-//         } else {
-//             res.status(409).send('Invalid User')
-//         }
-//     })
-// })
+router.delete('/:id', (req, res) => {
+    const delId = req.params.id;
+    const sqlQuery = `UPDATE department SET deletedAt = CURRENT_TIMESTAMP WHERE id = ${delId};`
+    con.query(sqlQuery, (err, result) => {
+        if (err) throw err;
+        if (result.affectedRows != 0) {
+            res.status(200).send('delete successfully')
+        } else {
+            res.status(409).send('Invalid User')
+        }
+    })
+})
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    const sqlQuery = `select * from room where id = ${id}`
+    const sqlQuery = `select * from department where id = ${id}`
     con.query(sqlQuery, (err, result) => {
-        if(err){
+        if (err) {
             res.status(409).send(err.sqlMessage)
             return
         }

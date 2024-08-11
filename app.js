@@ -11,6 +11,9 @@ const app = express()
 const userApiRouter = require('./routes/api/user');
 const blockApiRouter = require('./routes/api/block');
 const roomApiRouter = require('./routes/api/room');
+const deptApiRouter = require('./routes/api/department');
+const studentApiRouter = require('./routes/api/student');
+const attendanceApiRouter = require('./routes/api/attendance');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -25,11 +28,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/user/',userApiRouter);
 app.use('/api/block', blockApiRouter);
 app.use('/api/room/', roomApiRouter);
+app.use('/api/department/',deptApiRouter);
+app.use('/api/student/',studentApiRouter);
+app.use('/api/attendance/',attendanceApiRouter);
 
 app.use(function (req, res, next) {
     next(createError(404));
 });
-
 
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
