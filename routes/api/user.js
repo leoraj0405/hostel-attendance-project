@@ -9,10 +9,10 @@ const con = mysql.createConnection({
     database: 'attendance'
 })
 
-con.connect((err) => {
-    if (err) throw err;
-    console.log('connected')
-})
+// con.connect((err) => {
+//     if (err) throw err;
+//     console.log('connected')
+// })
 router.get('/', (req, res) => {
     var sqlQuery = `select *, DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM user where deletedAt is null`
     con.query(sqlQuery, (err, result) => {

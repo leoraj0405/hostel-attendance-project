@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SH Hostel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .submition {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <h2>Sign Up</h2>
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" class="form-control" id="firstName">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" class="form-control" id="lastName">
+            </div>
+            <div class="form-group">
+                <label for="phoneNo">Phone Number</label>
+                <input type="number" class="form-control" id="phoneNo">
+            </div>
+            <div class="form-group">
+                <label for="emailId">email Id</label>
+                <input type="email" class="form-control" id="emailId">
+            </div>
+            <div class="form-group">
+                <label for="userId">User Id</label>
+                <input type="text" class="form-control" id="userId">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+
+            <div class="submition">
+                <button onclick="signupUser()" class="btn btn-success">Login</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function signupUser() {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            const fname = document.getElementById('firstName').value;
+            const lname = document.getElementById('lastName').value;
+            const phoneNo = document.getElementById('phoneNo').value;
+            const email = document.getElementById('emailId').value;
+            const id = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+
+            const raw = JSON.stringify({
+                "firstName": fname,
+                "lastName": lname,
+                "phoneNo": phoneNo,
+                "email": email,
+                "loginId": id,
+                "password": password
+            });
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+                redirect: "follow"
+            };
+
+            const request = fetch("http://localhost:2000/api/user", requestOptions)
+                request.then((response) => {
+                    if(response.status == 200) {
+                        window.location.replace('http://localhost:2000/sh/login')
+                    } else {
+                        alert('Signup error! Please Signup Again')
+                    }
+                })
+                
+        }
+    </script>
+</body>
+
+</html>

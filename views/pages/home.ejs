@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Document</title>
+    <style>
+        .nav-bar {
+            height: 4cm;
+            display: flex;
+            align-content: space-between;
+            flex-direction: column;
+            justify-content: center;
+
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .font-size {
+            font-size: larger;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-light nav-bar" style="background-color: #e3f2fd;">
+        <div class="right-head">
+            <h2>Sacred Heart Hostel</h2>
+            <p>ST. Joseph's College </p>
+            <p>Trichy - 02</p>
+        </div>
+        <div class="left-head">
+            <p class="font-size">Welcome <%=name.firstName %> !</p>
+            <a href="/sh/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="attendance-btn">
+        <a href="#">Take Attendance</a>
+    </div>
+</body>
+
+</html>

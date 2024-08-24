@@ -9,10 +9,10 @@ const con = mysql.createConnection({
     database: 'attendance'
 })
 
-con.connect((err) => {
-    if (err) throw err;
-    console.log('connected')
-})
+// con.connect((err) => {
+//     if (err) throw err;
+//     console.log('connected')
+// })
 router.get('/', (req, res) => {
     var sqlQuery = `SELECT *,DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM block`
     con.query(sqlQuery, (err, result) => {

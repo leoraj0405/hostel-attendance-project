@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 
+mysql.escape
+
 const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -9,12 +11,26 @@ const con = mysql.createConnection({
     database: 'attendance'
 })
 
-con.connect((err) => {
-    if (err) throw err;
-    console.log('connected')
-})
+const INSERT_QUERY = /*sql*/`INSERT INTO student (
+    accNo, 
+    firstName, 
+    lastName, 
+    wardenId,
+    blockId, roomId, departmentId, phoneNo, email, native) 
+    values (?,?,?,?,?,?,?,?,?,?)`
+
+
+// con.connect((err) => {
+//     if (err) throw err;
+//     console.log('connected')
+// })
 router.get('/', (req, res) => {
-    var sqlQuery = `select *, DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM student where deletedAt is null`
+    var sqlQuery = /*sql*/`
+        SELECT 
+            *, 
+            DATE_FORMAT(createdAt, "%D %M %Y") AS createdAt 
+        FROM student 
+        WHERE deletedAt IS NULL`
     con.query(sqlQuery, (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)
@@ -36,10 +52,21 @@ router.post('/', (req, res) => {
         phoneNo,
         email,
         native,
-
     } = req.body;
-    const sqlQuery = 'insert into student (accNo, firstName, lastName, wardenId, blockId, roomId, departmentId, phoneNo, email, native) values (?,?,?,?,?,?,?,?,?,?)'
-    con.query(sqlQuery, [accNo, firstName, lastName, wardenId, blockId, roomId, departmentId, phoneNo, email, native], (err, result) => {
+
+    const student = [
+        accNo, 
+        firstName, 
+        lastName, wardenId, 
+        blockId, 
+        roomId, 
+        departmentId, 
+        phoneNo, 
+        email, 
+        native
+    ]
+
+    con.query(INSERT_QUERY, student, (err, result) => {
         if (err) {
             console.log(err)
             res.status(409).send(err.sqlMessage)
