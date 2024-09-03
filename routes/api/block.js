@@ -14,7 +14,7 @@ const con = mysql.createConnection({
 //     console.log('connected')
 // })
 router.get('/', (req, res) => {
-    var sqlQuery = `SELECT *,DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM block`
+    var sqlQuery = `SELECT *,DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM blocks`
     con.query(sqlQuery, (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)
@@ -28,7 +28,7 @@ router.post('/', (req, res) => {
     // const name = req.body.name;
     // res.send(name)
     const name = req.body.name;
-    const sqlQuery = 'insert into block (name) values (?)'
+    const sqlQuery = 'insert into blocks (name) values (?)'
     con.query(sqlQuery, [name], (err, result) => {
         if (err) {
             res.status(409).send(err.sqlMessage)
@@ -46,7 +46,7 @@ router.put('/:id', (req, res) => {
     const {
         name
     } = req.body;
-    const sqlQuery = `update block set name = '${name}' where id = ${id}`
+    const sqlQuery = `update blocks set name = '${name}' where id = ${id}`
 
     con.query(sqlQuery, (err, result) => {
         if (err) {
@@ -55,7 +55,7 @@ router.put('/:id', (req, res) => {
             return
         }
         if (result.affectedRows != 0) {
-            con.query(`select * from block where id = ${id}`, (err2, result2) => {
+            con.query(`select * from blocks where id = ${id}`, (err2, result2) => {
                 if (err2) {
                     console.log(err2)
                     res.status(409).send(err2.sqlMessage)
@@ -78,7 +78,7 @@ router.put('/:id', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = req.params.id;
-    const sqlQuery = `select * from block where id = ${id}`
+    const sqlQuery = `select * from blocks where id = ${id}`
     con.query(sqlQuery, (err, result) => {
         if(err){
             res.status(409).send(err.sqlMessage)

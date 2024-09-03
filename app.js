@@ -5,13 +5,17 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var FileStore = require('session-file-store')(session);
-var fileStoreOptions = {};
+// var FileStore = require('session-file-store')(session);
+// var fileStoreOptions = {};
+
 
 
 const http = require('http');
 const app = express()
 const mysql = require('mysql');
+
+
+
 
 const con = mysql.createConnection({
     host: 'localhost',
@@ -33,6 +37,8 @@ const studentApiRouter = require('./routes/api/student');
 const attendanceApiRouter = require('./routes/api/attendance');
 
 const shHomeUiRouter = require('./routes/ui/shHomeUi');
+const blockUiRouter = require('./routes/ui/blockUi');
+const roomUiRouter = require('./routes/ui/roomUi');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -44,34 +50,35 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    store: new FileStore(fileStoreOptions),
-    secret: 'sachin',
+    // store: new FileStore(fileStoreOptions),
+    secret: 'shHostel',
     resave: true,
     saveUninitialized: true,
-    cookie : {
-     maxAge:(1000 * 60 * 15)
-   } 
- }));
+    cookie: {
+        maxAge: (1000 * 60 * 30)
+    }
+}));
 
-app.use('/api/user/',userApiRouter);
-app.use('/api/block/', blockApiRouter);
-app.use('/api/room/', roomApiRouter);
-app.use('/api/department/',deptApiRouter);
-app.use('/api/student/',studentApiRouter);
-app.use('/api/attendance/',attendanceApiRouter);
-
-app.use('/sh/', shHomeUiRouter);
-
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
+    console.log("hello eorld")
     const {
         loginId,
         password,
     } = req.body;
-    con.query(`select id, firstName from user where loginId = '${loginId}' and password = ${password}`, (err, result) => {
-        if(err) {
+    con.query(/*sql*/`
+            SELECT
+             id, firstName
+              FROM
+               user 
+               WHERE 
+               loginId = '${loginId}'
+                AND 
+                 password = ${password}`
+                 , (err, result) => {
+        if (err) {
             console.log(err)
         }
-        if(result.length > 0) {
+        if (result.length > 0) {
             req.session.isLogged = true;
             req.session.data = result[0]
             // console.log(req.session.data)
@@ -84,9 +91,9 @@ app.post('/login', (req, res) => {
     })
 });
 
-app.get('/dashBoard', (req,res) => {
+app.get('/api/home', (req, res) => {
     if (req.session.isLogged == true) {
-        const name  = req.session.data.firstName;
+        const name = req.session.data.firstName;
         res.send(name)
     } else {
         res.send('please login')
@@ -94,22 +101,32 @@ app.get('/dashBoard', (req,res) => {
 
 })
 
-app.get('/logout',(req, res) =>{
+app.get('/api/logout', (req, res) => {
     req.session.destroy((err) => {
-        if(err) throw err;
+        if (err) throw err;
         res.send('session destroy')
     })
 })
+
+app.use('/api/user/', userApiRouter);
+app.use('/api/block/', blockApiRouter);
+app.use('/api/room/', roomApiRouter);
+app.use('/api/department/', deptApiRouter);
+app.use('/api/student/', studentApiRouter);
+app.use('/api/attendance/', attendanceApiRouter);
+
+app.use('/sh/', shHomeUiRouter);
+app.use('/sh/block/', blockUiRouter);
+app.use('/sh/room/', roomUiRouter);
+
 app.use(function (req, res, next) {
     next(createError(404));
 });
 
 app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
     res.status(err.status || 500);
     res.render('error');
 });

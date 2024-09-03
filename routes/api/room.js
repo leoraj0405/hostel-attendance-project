@@ -13,11 +13,24 @@ const con = mysql.createConnection({
 //     if (err) throw err;
 //     console.log('connected')
 // })
-router.get('/', (req, res) => {
-    var sqlQuery = `SELECT *,DATE_FORMAT(createdAt, "%D %M %Y") as createdAt FROM room`
-    con.query(sqlQuery, (err, result) => {
+router.get('/broom/:id', (req, res) => {
+    const id = req.params.id;
+    var sqlQuery =/*sql*/ `
+    SELECT
+     r.*,
+     b.id,
+     b.name
+    FROM
+       room AS r
+    JOIN
+     blocks AS b
+      ON
+       b.id = r.blockId 
+       WHERE
+        blockId = ?`
+    con.query(sqlQuery,[id], (err, result) => {
         if (err) {
-            res.status(409).send(err.sqlMessage)
+            res.status(409).send(err)
             return
         }
         res.status(200).send(result)
@@ -35,7 +48,7 @@ router.post('/', (req, res) => {
             res.status(409).send(err.sqlMessage)
             return
         }
-        if(result.affectedRows != 0) {
+        if (result.affectedRows != 0) {
             res.status(200).send("insert successfully")
         }
     })
@@ -94,7 +107,7 @@ router.get('/:id', (req, res) => {
     const id = req.params.id;
     const sqlQuery = `select * from room where id = ${id}`
     con.query(sqlQuery, (err, result) => {
-        if(err){
+        if (err) {
             res.status(409).send(err.sqlMessage)
             return
         }

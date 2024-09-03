@@ -4,8 +4,8 @@
 <head>
   <title>SH Hostel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
-
     .submition {
       display: flex;
       justify-content: space-around;
@@ -55,9 +55,9 @@
         redirect: "follow"
       };
 
-      const request = fetch("http://localhost:2000/login", requestOptions)
+      const request = fetch("http://localhost:2000/api/login", requestOptions)
       request.then(async (response) => {
-        if (response.status == 200) {
+        if (response == 200) {
           window.location.replace('http://localhost:2000/sh/home')
         } else {
           alert(await response.text())
